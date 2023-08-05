@@ -1,20 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
-func (a *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "status: available")
-	fmt.Fprintf(w, "environtment: %s\n", a.config.env)
-	fmt.Fprintf(w, "version: %s\n", version)
-}
+func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 
-func (a *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create movie")
-}
+	data := map[string]string{
+		"status":      "available",
+		"environment": app.config.env,
+		"version":     version,
+	}
 
-func (a *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "show movie")
+	err := writeJSON(w, http.StatusOK, data, nil)
+	if err != nil {
+		app.logger.Println(err)
+		http.Error(w, "The server encountered a problem process your request", http.StatusInternalServerError)
+	}
 }
